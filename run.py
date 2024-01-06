@@ -7,7 +7,7 @@ from norfair import Tracker, Video
 from norfair.camera_motion import MotionEstimator
 from norfair.distances import mean_euclidean
 
-from inference import Converter, HSVClassifier, InertiaClassifier, YoloV5
+from inference import Converter, HSVClassifier, InertiaClassifier, YoloV8
 from inference.filters import filters
 from run_utils import (
     get_ball_detections,
@@ -22,7 +22,7 @@ from soccer.pass_event import Pass
 parser = argparse.ArgumentParser()
 parser.add_argument(
     "--video",
-    default="videos/soccer_possession.mp4",
+    default="videos/3.mp4",
     type=str,
     help="Path to the input video",
 )
@@ -45,8 +45,7 @@ video = Video(input_path=args.video)
 fps = video.video_capture.get(cv2.CAP_PROP_FPS)
 
 # Object Detectors
-player_detector = YoloV5()
-ball_detector = YoloV5(model_path=args.model)
+detector = YoloV8()
 
 # HSV Classifier
 hsv_classifier = HSVClassifier(filters=filters)
@@ -94,8 +93,8 @@ passes_background = match.get_passes_background()
 for i, frame in enumerate(video):
 
     # Get Detections
-    players_detections = get_player_detections(player_detector, frame)
-    ball_detections = get_ball_detections(ball_detector, frame)
+    players_detections = get_player_detections(detector, frame)
+    ball_detections = get_ball_detections(detector, frame)
     detections = ball_detections + players_detections
 
     # Update trackers
