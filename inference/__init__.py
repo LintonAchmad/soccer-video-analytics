@@ -6,3 +6,4 @@ from .hsv_classifier import HSVClassifier
 from .inertia_classifier import InertiaClassifier
 from .nn_classifier import NNClassifier
 from .yolov5 import YoloV5
+from .yolov8 import YoloV8

@@ -3,11 +3,11 @@ from typing import List
 import norfair
 import numpy as np
 import pandas as pd
-
+import supervision as sv
 
 class Converter:
     @staticmethod
-    def DataFrame_to_Detections(df: pd.DataFrame) -> List[norfair.Detection]:
+    def DataFrame_to_Detections(df: List[sv.Detections]) -> List[norfair.Detection]:
         """
         Converts a DataFrame to a list of norfair.Detection
 
@@ -24,12 +24,12 @@ class Converter:
 
         detections = []
 
-        for index, row in df.iterrows():
+        for row in df:
             # get the bounding box coordinates
-            xmin = round(row["xmin"])
-            ymin = round(row["ymin"])
-            xmax = round(row["xmax"])
-            ymax = round(row["ymax"])
+            xmin = row.xyxy[0][0]
+            ymin = row.xyxy[0][1]
+            xmax = row.xyxy[0][2]
+            ymax = row.xyxy[0][3]
 
             box = np.array(
                 [
@@ -39,22 +39,22 @@ class Converter:
             )
 
             # get the predicted class
-            name = row["name"]
-            confidence = row["confidence"]
+            name = row.conf[0]
+            confidence = row.conf[0]
 
             data = {
                 "name": name,
                 "p": confidence,
             }
 
-            if "color" in row:
-                data["color"] = row["color"]
+            # if "color" in row:
+            #     data["color"] = row["color"]
 
-            if "label" in row:
-                data["label"] = row["label"]
+            # if "label" in row:
+            #     data["label"] = row["label"]
 
-            if "classification" in row:
-                data["classification"] = row["classification"]
+            # if "classification" in row:
+            #     data["classification"] = row["classification"]
 
             detection = norfair.Detection(
                 points=box,
