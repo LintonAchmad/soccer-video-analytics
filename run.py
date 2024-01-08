@@ -7,12 +7,11 @@ from norfair import Tracker, Video
 from norfair.camera_motion import MotionEstimator
 from norfair.distances import mean_euclidean
 
-from inference import Converter, HSVClassifier, InertiaClassifier, YoloV8
+from inference import Converter, HSVClassifier, InertiaClassifier, YoloV8, OutputJson
 from inference.filters import filters
 from run_utils import (
-    get_ball_detections,
     get_main_ball,
-    get_player_detections,
+    get_detections,
     update_motion_estimator,
 )
 from soccer import Match, Player, Team
@@ -90,11 +89,16 @@ path = AbsolutePath()
 possession_background = match.get_possession_background()
 passes_background = match.get_passes_background()
 
+ouput_json = OutputJson()
+json_name = ouput_json.generate_random_filename()
+
 for i, frame in enumerate(video):
 
     # Get Detections
-    players_detections = get_player_detections(detector, frame)
-    ball_detections = get_ball_detections(detector, frame)
+    df = get_detections(detector, frame)
+
+    players_detections = Converter.DataFrame_to_Detections(df.boxes[df.boxes.cls == 1])
+    ball_detections = Converter.DataFrame_to_Detections(df.boxes[df.boxes.cls == 0])
     detections = ball_detections + players_detections
 
     # Update trackers
@@ -159,6 +163,9 @@ for i, frame in enumerate(video):
         )
 
     frame = np.array(frame)
+
+    # Write to json output file LFG
+    ouput_json.write_detections(json_name, i, df)
 
     # Write video
     video.write(frame)

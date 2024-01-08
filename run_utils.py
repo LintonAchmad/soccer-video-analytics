@@ -8,36 +8,9 @@ from norfair.camera_motion import MotionEstimator
 from inference import Converter, YoloV8
 from soccer import Ball, Match
 
-
-def get_ball_detections(
-    ball_detector: YoloV8, frame: np.ndarray
-) -> List[norfair.Detection]:
-    """
-    Uses custom Yolov5 detector in order
-    to get the predictions of the ball and converts it to
-    Norfair.Detection list.
-
-    Parameters
-    ----------
-    ball_detector : YoloV5
-        YoloV5 detector for balls
-    frame : np.ndarray
-        Frame to get the ball detections from
-
-    Returns
-    -------
-    List[norfair.Detection]
-        List of ball detections
-    """
-    ball_df = ball_detector.predict(frame)
-    ball_df = ball_df[ball_df.cls == 0]
-
-    return Converter.DataFrame_to_Detections(ball_df)
-
-
-def get_player_detections(
-    person_detector: YoloV8, frame: np.ndarray
-) -> List[norfair.Detection]:
+def get_detections(
+    detector: YoloV8, frame: np.ndarray
+):
     """
     Uses YoloV5 Detector in order to detect the players
     in a match and filter out the detections that are not players
@@ -56,10 +29,7 @@ def get_player_detections(
         List of player detections
     """
 
-    person_df = person_detector.predict(frame)
-    person_df = person_df[person_df.cls == 1]
-
-    return Converter.DataFrame_to_Detections(person_df)
+    return detector.predict(frame)
 
 
 def create_mask(frame: np.ndarray, detections: List[norfair.Detection]) -> np.ndarray:
