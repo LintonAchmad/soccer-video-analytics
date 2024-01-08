@@ -39,7 +39,11 @@ class Converter:
             )
 
             # get the predicted class
-            name = row.conf[0]
+            if row.cls[0] == 0:
+                name = "football"
+            else:
+                name = "player"
+
             confidence = row.conf[0]
 
             data = {
