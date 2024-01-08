@@ -7,7 +7,7 @@ import supervision as sv
 
 class Converter:
     @staticmethod
-    def DataFrame_to_Detections(df: List[sv.Detections]) -> List[norfair.Detection]:
+    def DataFrame_to_Detections(df: List) -> List[norfair.Detection]:
         """
         Converts a DataFrame to a list of norfair.Detection
 
@@ -152,3 +152,9 @@ class Converter:
             detections.append(detection)
 
         return detections
+
+    @staticmethod
+    def Detections_to_Supervision(detections) -> pd.DataFrame:
+        results = sv.Detections.from_ultralytics(detections)
+
+        return results
