@@ -3,15 +3,19 @@ import os
 import uuid
 
 from inference import Converter
+from soccer import Match
 
 class OutputJson:
-    def write_detections(self, file_name, frame_id, detections):
+    def write_detections(self, file_name, frame_id, detections, match: Match):
         sv_detections = Converter.Detections_to_Supervision(detections)
 
         initial_data = {
             "frame_id": frame_id,
             "ball_xyxy": json.dumps(sv_detections[sv_detections.class_id == 0].xyxy.tolist()),
-            "player_xyxy": json.dumps(sv_detections[sv_detections.class_id == 1].xyxy.tolist())
+            "player_xyxy": json.dumps(sv_detections[sv_detections.class_id == 1].xyxy.tolist()),
+            "possession_counter": json.dumps(match.possession_counter),
+            "possession_team": json.dumps(match.team_possession.name),
+            "possession_team_counter": json.dumps(match.team_possession.possession)
         }
 
         self.append_to_json(file_name, initial_data)

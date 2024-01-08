@@ -165,7 +165,7 @@ for i, frame in enumerate(video):
     frame = np.array(frame)
 
     # Write to json output file LFG
-    ouput_json.write_detections(json_name, i, df)
+    ouput_json.write_detections(json_name, i, df, match=match)
 
     # Write video
     video.write(frame)
