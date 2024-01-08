@@ -43,4 +43,4 @@ class YoloV8(BaseDetector):
         # detections = sv.Detections.from_ultralytics(result)
         # print(detections)
 
-        return result.boxes
+        return result
