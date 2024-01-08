@@ -145,6 +145,4 @@ class BaseClassifier(ABC):
         for prediction in predictions:
             counter[prediction] += 1
 
-        print(json.dumps(counter, indent=4))
-
         return counter[label] / len(predictions), missclassified

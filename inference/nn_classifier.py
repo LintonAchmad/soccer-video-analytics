@@ -58,7 +58,6 @@ class NNClassifier(BaseClassifier):
             List of class names, by default None
         """
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-        print(self.device)
         self.model = Net().to(self.device)  # On GPU
         self.model.load_state_dict(torch.load(model_path))
 
