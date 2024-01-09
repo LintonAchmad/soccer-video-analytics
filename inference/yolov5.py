@@ -21,7 +21,6 @@ class YoloV5(BaseDetector):
             Path to model, by default None. If it's None, it will download the model with COCO weights
         """
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-        print(self.device)
 
         if model_path:
             self.model = torch.hub.load("ultralytics/yolov5", "custom", path=model_path)
