@@ -6,9 +6,19 @@ from inference import Converter
 from soccer import Match
 
 class OutputJson:
-    def write_detections(self, file_name, frame_id, detections, match: Match):
+    def write_detections(self, file_name, frame_id, detections, match: Match):     
+        """
+        Write detections to json file
+
+        ----------
+        possession_counter: counts how long team has possession for
+        """
+
         sv_detections = Converter.Detections_to_Supervision(detections)
         closest_player = self.get_closest_player_bbox(match)
+        game_possession = match.get_possession()
+        team_passes = match.get_team_passes()
+        match_passes = match.get_match_passes()
 
         initial_data = {
             "frame_id": frame_id,
@@ -17,7 +27,10 @@ class OutputJson:
             "possession_counter": json.dumps(match.possession_counter),
             "possession_team": json.dumps(match.team_possession.name),
             "possession_team_counter": json.dumps(match.team_possession.possession),
-            "closest_player": json.dumps(closest_player)
+            "closest_player": json.dumps(closest_player),
+            "game_possession": json.dumps(game_possession),
+            "team_passes": json.dumps(team_passes),
+            "match_passes": json.dumps(match_passes)
         }
 
         self.append_to_json(file_name, initial_data) 

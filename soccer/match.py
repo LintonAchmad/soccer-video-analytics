@@ -710,3 +710,24 @@ class Match:
             frame = self.draw_debug(frame=frame)
 
         return frame
+
+    def get_possession(self):
+        home_possession = int(self.home.get_percentage_possession(self.duration) * 100)
+        away_possession = int(self.away.get_percentage_possession(self.duration) * 100)
+
+        return {
+            self.home.name: home_possession,
+            self.away.name: away_possession
+        }
+    
+    def get_team_passes(self):
+        return {
+            self.home.name: len(self.home.passes),
+            self.away.name: len(self.away.passes)
+        }
+
+    def get_match_passes(self):
+        home_passes = len(self.home.passes)
+        away_passes = len(self.away.passes)
+
+        return home_passes + away_passes
