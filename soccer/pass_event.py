@@ -291,7 +291,7 @@ class PassEvent:
 
         return new_pass
 
-    def process_pass(self) -> None:
+    def process_pass(self, match) -> None:
         """
         Check if a new pass was generated and in the positive case save the new pass into de right team
         """
@@ -308,6 +308,11 @@ class PassEvent:
             if valid_pass:
                 # Generate new pass
                 team = self.closest_player.team
+
+                # Check if team is in possession if not then assign to team in possession
+                if match.name != team.name:
+                    team = match
+
                 start_pass = self.last_player_with_ball.closest_foot_to_ball_abs(
                     self.ball
                 )

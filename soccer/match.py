@@ -35,9 +35,9 @@ class Match:
         self.closest_player = None
         self.ball = None
         # Amount of consecutive frames new team has to have the ball in order to change possession
-        self.possesion_counter_threshold = 20
+        self.possesion_counter_threshold = 10
         # Distance in pixels from player to ball in order to consider a player has the ball
-        self.ball_distance_threshold = 45
+        self.ball_distance_threshold = 30
         self.fps = fps
         # Pass detection
         self.pass_event = PassEvent()
@@ -89,7 +89,7 @@ class Match:
         # Pass detection
         self.pass_event.update(closest_player=closest_player, ball=ball)
 
-        self.pass_event.process_pass()
+        self.pass_event.process_pass(self.team_possession)
 
     def change_team(self, team: Team):
         """
