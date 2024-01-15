@@ -92,6 +92,17 @@ passes_background = match.get_passes_background()
 ouput_json = OutputJson()
 json_name = ouput_json.generate_random_filename()
 
+src=cv2.imread('src.jpg')
+dst=cv2.imread('dst.jpg')
+coptemp=dst.copy()
+
+pts1 = np.float32([[940,96],[1427,395],[455,395],[943,1022]])
+pts2 = np.float32([[450,33],[540,300],[362,302],[450,567]])
+
+pts3 = np.float32([[943,395]])
+
+M = cv2.getPerspectiveTransform(pts1,pts2)
+
 for i, frame in enumerate(video):
 
     # Get Detections
@@ -165,7 +176,7 @@ for i, frame in enumerate(video):
     frame = np.array(frame)
 
     # Write to json output file LFG
-    ouput_json.write_detections(json_name, i, df, match=match)
+    ouput_json.write_detections(json_name, i, df, match=match, matrix=M)
 
     # Write video
     video.write(frame)

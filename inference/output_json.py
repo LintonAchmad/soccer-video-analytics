@@ -1,12 +1,14 @@
 import json
 import os
 import uuid
+import cv2
+import numpy as np
 
 from inference import Converter
 from soccer import Match
 
 class OutputJson:
-    def write_detections(self, file_name, frame_id, detections, match: Match):     
+    def write_detections(self, file_name, frame_id, detections, match: Match, matrix):     
         """
         Write detections to json file
 
@@ -19,7 +21,8 @@ class OutputJson:
         game_possession = match.get_possession()
         team_passes = match.get_team_passes()
         match_passes = match.get_match_passes()
-
+        pitchMap = self.get_pitch_map(sv_detections[sv_detections.class_id == 1].xyxy, matrix)
+        print(pitchMap)
         initial_data = {
             "frame_id": frame_id,
             "ball_xyxy": json.dumps(sv_detections[sv_detections.class_id == 0].xyxy.tolist()),
@@ -30,7 +33,8 @@ class OutputJson:
             "closest_player": json.dumps(closest_player),
             "game_possession": json.dumps(game_possession),
             "team_passes": json.dumps(team_passes),
-            "match_passes": json.dumps(match_passes)
+            "match_passes": json.dumps(match_passes),
+            "pitch_map": json.dumps(pitchMap),
         }
 
         self.append_to_json(file_name, initial_data) 
@@ -73,3 +77,21 @@ class OutputJson:
             return closest_player
         else:
             return []
+        
+    def get_pitch_map(self, players, matrix):
+        points = []
+
+        for p in players:
+            tl = np.float32([[p[0], p[1]]])
+            br = np.float32([[p[2], p[3]]])
+
+            # Apply perspective transformation
+            tl_transformed = cv2.perspectiveTransform(tl[None, :, :], matrix)
+            br_transformed = cv2.perspectiveTransform(br[None, :, :], matrix)
+
+            # Extract transformed coordinates
+            x1, y1 = int(tl_transformed[0][0][0]), int(tl_transformed[0][0][1])
+            x2, y2 = int(br_transformed[0][0][0]), int(br_transformed[0][0][1])
+            points.append((x1, y1))
+
+        return points

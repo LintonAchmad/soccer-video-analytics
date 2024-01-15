@@ -3,9 +3,6 @@ import numpy as np
 
 src=cv2.imread('src.jpg')
 dst=cv2.imread('dst.jpg')
-
-srcs=src.shape
-dsts=dst.shape
 coptemp=dst.copy()
 
 pts1 = np.float32([[940,96],[1427,395],[455,395],[943,1022]])
