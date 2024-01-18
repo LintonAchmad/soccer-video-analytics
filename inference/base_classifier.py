@@ -98,16 +98,16 @@ class BaseClassifier(ABC):
         ):
             raise TypeError("detections must be a list of norfair.Detection")
 
-        box_images = []
+        # box_images = []
 
+        # for detection in detections:
+        #     box = Box(detection.points[0], detection.points[1], img)
+        #     box_images.append(box.img)
+
+        # class_name = self.predict(box_images)
+        # print(class_name)
         for detection in detections:
-            box = Box(detection.points[0], detection.points[1], img)
-            box_images.append(box.img)
-
-        class_name = self.predict(box_images)
-
-        for detection, name in zip(detections, class_name):
-            detection.data["classification"] = name
+            detection.data["classification"] = detection.data["label"]
 
         return detections
 
