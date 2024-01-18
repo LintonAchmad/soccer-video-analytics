@@ -135,7 +135,7 @@ for i, frame in enumerate(video):
     )
 
     ball_detections = converter.DataFrame_to_Detections(
-        df.boxes[df.boxes.cls == 3],
+        df.boxes[df.boxes.cls == 2],
         width=width,
         left_team_label=left_team_label,
         kits_clf=kits_clf,
