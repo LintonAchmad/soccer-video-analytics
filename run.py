@@ -54,13 +54,13 @@ classifier = InertiaClassifier(classifier=hsv_classifier, inertia=20)
 
 # Teams and Match
 chelsea = Team(
-    name="Chelsea",
-    abbreviation="CHE",
+    name="Player-R",
+    abbreviation="PLR",
     color=(255, 0, 0),
     board_color=(244, 86, 64),
     text_color=(255, 255, 255),
 )
-man_city = Team(name="Man City", abbreviation="MNC", color=(240, 230, 188))
+man_city = Team(name="Player-L", abbreviation="PLL", color=(240, 230, 188))
 teams = [chelsea, man_city]
 match = Match(home=chelsea, away=man_city, fps=fps)
 match.team_possession = man_city
@@ -84,6 +84,7 @@ coord_transformations = None
 
 # Paths
 path = AbsolutePath()
+converter = Converter()
 
 # Get Counter img
 possession_background = match.get_possession_background()
@@ -96,20 +97,51 @@ src=cv2.imread('src.jpg')
 dst=cv2.imread('dst.jpg')
 coptemp=dst.copy()
 
-pts1 = np.float32([[940,96],[1427,395],[455,395],[943,1022]])
+pts1 = np.float32([[377,176],[1368,169],[1754,722],[4,710]])
 pts2 = np.float32([[450,33],[540,300],[362,302],[450,567]])
 
-pts3 = np.float32([[943,395]])
-
 M = cv2.getPerspectiveTransform(pts1,pts2)
+
+kits_clf = None
+left_team_label = 0
+grass_hsv = None
+
+height = int(video.video_capture.get(cv2.CAP_PROP_FRAME_HEIGHT))
+width = int(video.video_capture.get(cv2.CAP_PROP_FRAME_WIDTH))
 
 for i, frame in enumerate(video):
 
     # Get Detections
-    df = get_detections(detector, frame)
+    annotated_frame = cv2.resize(frame, (width, height))
+    df = get_detections(detector, annotated_frame)
 
-    players_detections = Converter.DataFrame_to_Detections(df.boxes[df.boxes.cls == 1])
-    ball_detections = Converter.DataFrame_to_Detections(df.boxes[df.boxes.cls == 0])
+    # Get the players boxes and kit colors
+    players_imgs, players_boxes = hsv_classifier.get_players_boxes(result=df)
+    kits_colors = hsv_classifier.get_kits_colors(players_imgs, grass_hsv, annotated_frame)
+
+    if i == 0:
+        kits_clf = hsv_classifier.get_kits_classifier(kits_colors)
+        left_team_label = hsv_classifier.get_left_team_label(players_boxes, kits_colors, kits_clf)
+        grass_color = hsv_classifier.get_grass_color(df.orig_img)
+        grass_hsv = cv2.cvtColor(np.uint8([[list(grass_color)]]), cv2.COLOR_BGR2HSV)
+
+    players_detections = converter.DataFrame_to_Detections(
+        df.boxes[df.boxes.cls == 0],
+        width=width,
+        left_team_label=left_team_label,
+        kits_clf=kits_clf,
+        orig_img=df.orig_img,
+        grass_hsv=grass_hsv
+    )
+
+    ball_detections = converter.DataFrame_to_Detections(
+        df.boxes[df.boxes.cls == 3],
+        width=width,
+        left_team_label=left_team_label,
+        kits_clf=kits_clf,
+        orig_img=df.orig_img,
+        grass_hsv=grass_hsv
+    )
     detections = ball_detections + players_detections
 
     # Update trackers
@@ -137,7 +169,8 @@ for i, frame in enumerate(video):
 
     # Match update
     ball = get_main_ball(ball_detections)
-    players = Player.from_detections(detections=players_detections, teams=teams)
+    players = Player.from_detections(detections=player_detections, teams=teams)
+
     match.update(players, ball)
 
     # Draw
