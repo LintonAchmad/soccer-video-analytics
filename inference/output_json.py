@@ -22,7 +22,7 @@ class OutputJson:
         team_passes = match.get_team_passes()
         match_passes = match.get_match_passes()
         pitchMap = self.get_pitch_map(sv_detections[sv_detections.class_id == 1].xyxy, matrix)
-        print(pitchMap)
+
         initial_data = {
             "frame_id": frame_id,
             "ball_xyxy": json.dumps(sv_detections[sv_detections.class_id == 0].xyxy.tolist()),
@@ -77,7 +77,7 @@ class OutputJson:
             return closest_player
         else:
             return []
-        
+
     def get_pitch_map(self, players, matrix):
         points = []
 
