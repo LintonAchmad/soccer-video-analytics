@@ -21,7 +21,7 @@ class YoloV8(BaseDetector):
             Path to model, by default None. If it's None, it will download the model with COCO weights
         """
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-        self.model = YOLO("models/best-31-dec-23.pt")
+        self.model = YOLO("models/last.pt")
 
     def predict(self, input_image: List[np.ndarray]):
         """
