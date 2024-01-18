@@ -1,13 +1,13 @@
-from inference.colors import black, yellow, white, red, blue
+from inference.colors import black, yellow, white, red, blue, orange
 
 chelsea_filter = {
     "name": "Chelsea",
-    "colors": [blue],
+    "colors": [white],
 }
 
 city_filter = {
     "name": "Man City",
-    "colors": [white, red],
+    "colors": [orange],
 }
 
 referee_filter = {
